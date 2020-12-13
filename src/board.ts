@@ -1,5 +1,6 @@
 import colors from "colors/safe";
 import { println, print } from "./utils";
+import { Direction } from "./types";
 
 export class Board {
   board: number[][];
@@ -46,32 +47,56 @@ export class Board {
           continue;
         }
 
-        let counter = 0;
-        const directions = [
-          [true, false],
-          [false, true],
-          [true, true],
+        const directions: Direction[] = [
+          Direction.VERTICAL,
+          Direction.HORIZONTAL,
+          Direction.DIAGONAL_UP,
+          Direction.DIAGONAL_DOWN,
         ];
-        for (let i = 0; i < 3; i++) {
-          counter = 0;
-          for (let j = 0; j < 4; j++) {
-            try {
-              if (this.board[columnIndex + (directions[0] ? i : 0)][pieceIndex + (directions[0] ? j : 0)] == player) {
-                counter++;
-              } else {
-                break;
-              }
-            } catch (e) {
-              break;
-            }
-          }
-          if (counter >= 4) {
+        for (const direction of directions) {
+          if (this.checkLine(columnIndex, pieceIndex, direction, player)) {
             return true;
           }
         }
       }
     }
     return false;
+  }
+
+  /**
+   * check if a line exist from the param piece
+   * @param column
+   * @param piece
+   * @param direction
+   * @param player
+   */
+  checkLine(column: number, piece: number, direction: Direction, player: number) {
+    for (let j = 0; j < 3; j++) {
+      switch (direction) {
+        case Direction.HORIZONTAL:
+          column += 1;
+          break;
+        case Direction.VERTICAL:
+          piece += 1;
+          break;
+        case Direction.DIAGONAL_UP:
+          column += 1;
+          piece += 1;
+          break;
+        case Direction.DIAGONAL_DOWN:
+          column += 1;
+          piece -= 1;
+          break;
+      }
+      try {
+        if (this.board[column][piece] != player) {
+          return false;
+        }
+      } catch (e) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -82,10 +107,20 @@ export class Board {
     // Browse all columns
     this.board.forEach((column, index) => {
       if (column.length < this.nbFloor) {
-        available.push(index + 1);
+        available.push(index);
       }
     });
     return available;
+  }
+
+  private getPlayerColor(piece: number): string {
+    if (piece == 0) {
+      return colors.yellow("o");
+    } else if (piece == 1) {
+      return colors.red("o");
+    }
+
+    return " ";
   }
 
   /**
@@ -97,18 +132,14 @@ export class Board {
       // Browse all columns
       for (const column of this.board) {
         print("|");
-        if (column[i] == 0) print(colors.yellow("o"));
-        // player 1 piece
-        else if (column[i] == 1) print(colors.red("o"));
-        // player 2 piece
-        else print(" "); // no piece
+        print(this.getPlayerColor(column[i]));
       }
       println("|");
     }
 
-    for (let i = 1; i <= this.nbColumns; i++) {
+    for (let i = 0; i < this.nbColumns; i++) {
       print(" ");
-      print(this.availableColumns.includes(i) ? i.toString() : " ");
+      print(this.availableColumns.includes(i) ? (i + 1).toString() : " ");
     }
     println("");
   }

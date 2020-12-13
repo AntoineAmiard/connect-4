@@ -1,6 +1,6 @@
 import { Board } from "./board";
 import readlineSync from "readline-sync";
-import { print, println } from "./utils";
+import { println } from "./utils";
 
 export class Game {
   board: Board;
@@ -57,10 +57,10 @@ export class Game {
     // while input is not correcct
     do {
       input = readlineSync.question("Select a column :");
-      choice = parseInt(input);
+      choice = parseInt(input) - 1;
     } while (isNaN(choice) || choice < 0 || choice > Math.max(...this.board.availableColumns));
 
-    return choice - 1;
+    return choice;
   }
 
   /**
