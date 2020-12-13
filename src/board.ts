@@ -1,9 +1,10 @@
 import colors from "colors/safe";
 import { println, print } from "./utils";
-import { Direction } from "./types";
+import { Direction, Piece } from "./types";
+import { Position } from "./interfaces";
 
 export class Board {
-  board: number[][];
+  board: Piece[][];
   nbColumns: number;
   nbFloor: number;
 
@@ -22,7 +23,7 @@ export class Board {
    * @param column the number of the column
    * @param piece the piece symbol
    */
-  public placePiece(column: number, piece: number) {
+  public placePiece(column: number, piece: Piece) {
     if (column <= 0 && column > this.nbColumns) {
       throw new Error("Column must be between 0 and " + this.nbColumns);
     }
@@ -37,7 +38,7 @@ export class Board {
    * check if the player win
    * @param player the player's symbol
    */
-  public checkWinner(player: number): boolean {
+  public checkWinner(player: Piece): boolean {
     // browse all columns
     for (const [columnIndex, column] of this.board.entries()) {
       // browse all pice in the column
@@ -54,7 +55,7 @@ export class Board {
           Direction.DIAGONAL_DOWN,
         ];
         for (const direction of directions) {
-          if (this.checkLine(columnIndex, pieceIndex, direction, player)) {
+          if (this.checkLine({ column: columnIndex, piece: pieceIndex }, direction, player)) {
             return true;
           }
         }
@@ -70,26 +71,26 @@ export class Board {
    * @param direction
    * @param player
    */
-  checkLine(column: number, piece: number, direction: Direction, player: number) {
+  checkLine(position: Position, direction: Direction, player: Piece) {
     for (let j = 0; j < 3; j++) {
       switch (direction) {
         case Direction.HORIZONTAL:
-          column += 1;
+          position.column += 1;
           break;
         case Direction.VERTICAL:
-          piece += 1;
+          position.piece += 1;
           break;
         case Direction.DIAGONAL_UP:
-          column += 1;
-          piece += 1;
+          position.column += 1;
+          position.piece += 1;
           break;
         case Direction.DIAGONAL_DOWN:
-          column += 1;
-          piece -= 1;
+          position.column += 1;
+          position.piece -= 1;
           break;
       }
       try {
-        if (this.board[column][piece] != player) {
+        if (this.board[position.column][position.piece] != player) {
           return false;
         }
       } catch (e) {
@@ -113,7 +114,7 @@ export class Board {
     return available;
   }
 
-  private getPlayerColor(piece: number): string {
+  private getPlayerColor(piece: Piece): string {
     if (piece == 0) {
       return colors.yellow("o");
     } else if (piece == 1) {
