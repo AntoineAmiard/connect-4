@@ -29,14 +29,14 @@ describe("Place piece", function () {
   it("should detect diagonal line", function () {
     const board = new Board(7, 6);
     board.placePiece(0, 1);
-    board.placePiece(1, 0);
+    board.placePiece(1, -1);
     board.placePiece(1, 1);
-    board.placePiece(2, 0);
-    board.placePiece(2, 0);
+    board.placePiece(2, -1);
+    board.placePiece(2, -1);
     board.placePiece(2, 1);
-    board.placePiece(3, 0);
-    board.placePiece(3, 0);
-    board.placePiece(3, 0);
+    board.placePiece(3, -1);
+    board.placePiece(3, -1);
+    board.placePiece(3, -1);
     board.placePiece(3, 1);
     expect(board.checkWinner(1)).toBeTruthy;
   });

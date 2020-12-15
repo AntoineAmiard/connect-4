@@ -5,4 +5,9 @@ export enum Direction {
   DIAGONAL_DOWN,
 }
 
-export type Piece = 0 | 1;
+export enum User {
+  PLAYER,
+  AI,
+}
+
+export type Piece = -1 | 1;

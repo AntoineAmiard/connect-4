@@ -1,10 +1,10 @@
 import colors from "colors/safe";
 import { println, print } from "./utils";
-import { Direction, Piece } from "./types";
+import { Direction, Piece, User } from "./types";
 import { Position } from "./interfaces";
 
 export class Board {
-  board: Piece[][];
+  board: User[][];
   nbColumns: number;
   nbFloor: number;
 
@@ -18,27 +18,28 @@ export class Board {
   }
 
   /**
-   * Place a piece on the board
+   * Add a piece in the column
    *
    * @param column the number of the column
    * @param piece the piece symbol
    */
-  public placePiece(column: number, piece: Piece) {
-    if (column <= 0 && column > this.nbColumns) {
-      throw new Error("Column must be between 0 and " + this.nbColumns);
-    }
-    const selectedColumn: number[] = this.board[column];
-    if (selectedColumn.length >= this.nbFloor) {
-      throw new Error("Column already full");
-    }
-    selectedColumn.push(piece);
+  placePiece(column: number, player: User) {
+    this.board[column].push(player);
+  }
+
+  /**
+   * Remove the last piece of the column
+   * @param column the number of the column
+   */
+  removePiece(column: number) {
+    this.board[column].pop();
   }
 
   /**
    * check if the player win
    * @param player the player's symbol
    */
-  public checkWinner(player: Piece): boolean {
+  checkWinner(player: User): boolean {
     // browse all columns
     for (const [columnIndex, column] of this.board.entries()) {
       // browse all pice in the column
@@ -55,7 +56,7 @@ export class Board {
           Direction.DIAGONAL_DOWN,
         ];
         for (const direction of directions) {
-          if (this.checkLine({ column: columnIndex, piece: pieceIndex }, direction, player)) {
+          if (this.checkLine({ column: columnIndex, piece: pieceIndex }, direction, piece) == 4) {
             return true;
           }
         }
@@ -71,7 +72,8 @@ export class Board {
    * @param direction
    * @param player
    */
-  checkLine(position: Position, direction: Direction, player: Piece) {
+  checkLine(position: Position, direction: Direction, player: User) {
+    let counter = 1;
     for (let j = 0; j < 3; j++) {
       switch (direction) {
         case Direction.HORIZONTAL:
@@ -91,13 +93,14 @@ export class Board {
       }
       try {
         if (this.board[position.column][position.piece] != player) {
-          return false;
+          return counter;
         }
       } catch (e) {
-        return false;
+        return counter;
       }
+      counter++;
     }
-    return true;
+    return counter;
   }
 
   /**
@@ -114,8 +117,12 @@ export class Board {
     return available;
   }
 
-  private getPlayerColor(piece: Piece): string {
-    if (piece == 0) {
+  /**
+   * Return the player color
+   * @param piece
+   */
+  getPlayerColor(piece: User): string {
+    if (piece == User.PLAYER) {
       return colors.yellow("o");
     } else if (piece == 1) {
       return colors.red("o");
@@ -127,13 +134,13 @@ export class Board {
   /**
    * Display the board
    */
-  public display(): void {
+  display(): void {
     // Browse all flours
-    for (let i = this.nbFloor; i >= 0; i--) {
+    for (let i = this.nbFloor; i > 0; i--) {
       // Browse all columns
       for (const column of this.board) {
         print("|");
-        print(this.getPlayerColor(column[i]));
+        print(this.getPlayerColor(column[i - 1]));
       }
       println("|");
     }

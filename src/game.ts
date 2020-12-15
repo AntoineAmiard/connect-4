@@ -1,12 +1,24 @@
 import { Board } from "./board";
+import colors from "colors";
 import readlineSync from "readline-sync";
 import { println } from "./utils";
+import { AI } from "./ai";
+import { User } from "./types";
 
 export class Game {
+  numberOfTurn: number;
   board: Board;
+  ai: AI;
+
+  players: {
+    player1: -1;
+    player2: 1;
+  };
 
   constructor(columns: number, floors: number) {
     this.board = new Board(columns, floors);
+    this.ai = new AI(this.board);
+    this.numberOfTurn = columns * floors;
   }
 
   /**
@@ -15,36 +27,44 @@ export class Game {
   start(): void {
     println("----------- Game start -----------");
     let choice: number;
-    while (true) {
-      console.clear();
+    let result: boolean;
+
+    while (this.board.availableColumns.length != 0) {
+      // console.clear();
       this.board.display();
+
       // ---- PLAYER TURN ------
 
       choice = this.getUserChoice();
-      println(choice.toString());
-      this.board.placePiece(choice, 0);
+      this.board.placePiece(choice, User.PLAYER);
 
       // check if player win
-      if (this.board.checkWinner(0)) {
+      result = this.board.checkWinner(User.PLAYER);
+      if (result) {
         console.clear();
         this.board.display();
-        println("Well played ! You win !");
-        break;
+        println(colors.green("Well played ! You win !"));
+        process.exit(0);
       }
 
       // ---- AI TURN ------
       choice = this.getAiChoice();
-      +println(choice.toString());
-      this.board.placePiece(choice, 1);
+      this.board.placePiece(choice, User.AI);
 
       // check if AI win
-      if (this.board.checkWinner(1)) {
+      result = this.board.checkWinner(User.AI);
+      if (result) {
         console.clear();
         this.board.display();
-        println("Arf ! You lose");
-        break;
+        println(colors.red("Arf ! You lose"));
+        process.exit(0);
       }
+      this.ai.setBoard(this.board);
     }
+
+    console.clear();
+    this.board.display();
+    println(colors.blue("Equality"));
   }
 
   /**
@@ -58,7 +78,7 @@ export class Game {
     do {
       input = readlineSync.question("Select a column :");
       choice = parseInt(input) - 1;
-    } while (isNaN(choice) || choice < 0 || choice > Math.max(...this.board.availableColumns));
+    } while (isNaN(choice) || !this.board.availableColumns.includes(choice));
 
     return choice;
   }
@@ -67,8 +87,7 @@ export class Game {
    * Get AI choice
    */
   getAiChoice(): number {
-    console.log(this.board.availableColumns);
-    const random: number = Math.floor(Math.random() * this.board.availableColumns.length);
-    return this.board.availableColumns[random];
+    return this.ai.play();
+    // return this.board.availableColumns[Math.floor(Math.random() * this.board.availableColumns.length)];
   }
 }
