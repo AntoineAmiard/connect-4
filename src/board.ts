@@ -1,7 +1,8 @@
-import colors from "colors/safe";
-import { println, print } from "./utils";
 import { Direction, Piece, User } from "./types";
+import { print, println } from "./utils";
+
 import { Position } from "./interfaces";
+import colors from "colors/safe";
 
 export class Board {
   board: User[][];
@@ -116,6 +117,7 @@ export class Board {
     });
     return available;
   }
+
 
   /**
    * Return the player color

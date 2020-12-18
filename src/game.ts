@@ -1,9 +1,9 @@
-import { Board } from "./board";
-import colors from "colors";
-import readlineSync from "readline-sync";
-import { println } from "./utils";
 import { AI } from "./ai";
+import { Board } from "./board";
 import { User } from "./types";
+import colors from "colors";
+import { println } from "./utils";
+import readlineSync from "readline-sync";
 
 export class Game {
   numberOfTurn: number;
@@ -17,7 +17,7 @@ export class Game {
 
   constructor(columns: number, floors: number) {
     this.board = new Board(columns, floors);
-    this.ai = new AI(this.board);
+    this.ai = new AI();
     this.numberOfTurn = columns * floors;
   }
 
@@ -59,7 +59,6 @@ export class Game {
         println(colors.red("Arf ! You lose"));
         process.exit(0);
       }
-      this.ai.setBoard(this.board);
     }
 
     console.clear();
@@ -87,7 +86,7 @@ export class Game {
    * Get AI choice
    */
   getAiChoice(): number {
-    return this.ai.play();
+    return this.ai.play(this.board);
     // return this.board.availableColumns[Math.floor(Math.random() * this.board.availableColumns.length)];
   }
 }
