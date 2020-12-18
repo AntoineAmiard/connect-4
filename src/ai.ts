@@ -26,7 +26,7 @@ export class AI {
         ];
         for (const direction of directions) {
           const line = board.checkLine({ column: columnIndex, piece: pieceIndex }, direction, player);
-          score += (player == User.PLAYER ? - this.score[line] :this.score[line]);
+          score += this.score[line];
         }
       }
     }
@@ -39,7 +39,7 @@ export class AI {
     for (const column of board.availableColumns) {
       board.placePiece(column, User.AI);
       // let score = this.evaluateBoard(board, User.AI);
-      let score = this.minimax(board, 4, User.PLAYER);
+      let score = this.minimax(board, 1, User.PLAYER);
       board.removePiece(column);
       console.log(`Column ${column} has a score ${score}`);
       if (score > bestSCore) {
