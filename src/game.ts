@@ -1,9 +1,9 @@
-import { AI } from "./ai";
-import { Board } from "./board";
-import { User } from "./types";
-import colors from "colors";
-import { println } from "./utils";
-import readlineSync from "readline-sync";
+import { AI } from './ai';
+import { Board } from './board';
+import { User } from './types';
+import colors from 'colors';
+import { println } from './utils';
+import readlineSync from 'readline-sync';
 
 export class Game {
   numberOfTurn: number;
@@ -25,12 +25,12 @@ export class Game {
    * Start the game
    */
   start(): void {
-    println("----------- Game start -----------");
+    println('----------- Game start -----------');
     let choice: number;
     let result: boolean;
 
     while (this.board.availableColumns.length != 0) {
-      // console.clear();
+      console.clear();
       this.board.display();
 
       // ---- PLAYER TURN ------
@@ -43,7 +43,7 @@ export class Game {
       if (result) {
         console.clear();
         this.board.display();
-        println(colors.green("Well played ! You win !"));
+        println(colors.green('Well played ! You win !'));
         process.exit(0);
       }
 
@@ -56,14 +56,14 @@ export class Game {
       if (result) {
         console.clear();
         this.board.display();
-        println(colors.red("Arf ! You lose"));
+        println(colors.red('Arf ! You lose'));
         process.exit(0);
       }
     }
 
     console.clear();
     this.board.display();
-    println(colors.blue("Equality"));
+    println(colors.blue('Equality'));
   }
 
   /**
@@ -75,7 +75,7 @@ export class Game {
 
     // while input is not correcct
     do {
-      input = readlineSync.question("Select a column :");
+      input = readlineSync.question('Select a column :');
       choice = parseInt(input) - 1;
     } while (isNaN(choice) || !this.board.availableColumns.includes(choice));
 

@@ -1,4 +1,4 @@
-import { Game } from "./game";
+import { Game } from './game';
 
 /**
  * Starting point of the game
